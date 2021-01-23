@@ -45,6 +45,7 @@ void next(Lexer* l) {
 }
 
 void lexer_init(Lexer* l, char* input, const char* filename) {
+  assert(input);
   l->index = &input[0];
   l->line = 0;
   l->count = 1;
@@ -62,13 +63,29 @@ begin_loop:
       case '\r':
         l->line++;
         l->count = 0;
-        break;
+        l->token.type = T_NEWLINE;
+        return l->token;
 
       case ' ':
       case '\t':
       case '\v':
       case '\f':
         break;
+
+      case '#':
+        while (*l->index != '\0') {
+          if (*l->index == '\\') {
+            l->index++;
+          }
+          else if (end_of_line(l) && (*l->index != '\\')) {
+            break;
+          }
+          l->index++;
+          l->count++;
+        }
+        l->token.length = l->index - l->token.string;
+        l->token.type = T_MACRO;
+        return l->token;
 
       case '=':
         l->token.type = T_ASSIGN;

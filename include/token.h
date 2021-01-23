@@ -64,6 +64,9 @@ enum Token_type {
   T_DOT,            // '.'
   T_ARROW,          // '->'
 
+  T_NEWLINE,
+  T_MACRO,
+
   T_SYMBOL, // Any other symbol (keyword, identifier, number e.t.c.)
   T_EOF,
 };
@@ -74,5 +77,9 @@ struct Token {
   i32 type;
   // TODO(lucas): Add additional info like line number, file name e.t.c.
 };
+
+void token_print(FILE* file, struct Token token);
+
+void token_printline(FILE* file, struct Token token);
 
 #endif

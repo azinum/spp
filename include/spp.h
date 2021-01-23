@@ -5,6 +5,6 @@
 
 #include "common.h"
 
-void spp_start(i32 argc, char** argv);
+i32 spp_start(i32 argc, char** argv);
 
 #endif

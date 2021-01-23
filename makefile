@@ -14,6 +14,6 @@ compile: ${SRC} ${INC}
 	${CC} ${FLAGS}
 
 run:
-	./${BUILD_DIR}/${PROG}
+	./${BUILD_DIR}/${PROG} test.c
 
 install:
