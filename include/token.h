@@ -69,7 +69,7 @@ enum Token_type {
   T_MACRO,
 
   T_LAMBDA_BODY,
-  T_LAMBDA,
+  T_LAMBDA, // NOTE(lucas): Unused for now
   T_ARGLIST,
   T_RETURN_TYPE,
   T_BODY,
@@ -85,7 +85,7 @@ struct Token {
   i32 length;
   i32 type;
 
-  i32 id; // TODO(lucas): Temporary
+  i32 id; // TODO(lucas): Temporary, for identification lambda expressions
 };
 
 void token_print(FILE* file, struct Token token);

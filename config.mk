@@ -7,6 +7,8 @@ PROG=spp
 
 BUILD_DIR=build
 
+OUT_DIR=output
+
 SRC=src/*.c
 
 INC_DIR=include

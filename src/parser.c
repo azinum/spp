@@ -10,10 +10,7 @@
 #define parse_error(fmt, ...) \
   fprintf(stderr, "[ParseError]: %s:%i:%i: " fmt, p->l->filename, p->l->line, p->l->count, ##__VA_ARGS__)
 
-#define TAB_SIZE 2
-
 static void parser_init(Parser* parser, Lexer* lexer, Ast* ast);
-static void print_tabs(FILE* file, i32 level);
 static i32 expect(Parser* p, i32 type);
 static i32 end(Parser* p);
 static i32 block_end(Parser* p);
@@ -29,12 +26,6 @@ void parser_init(Parser* p, Lexer* l, Ast* ast) {
   p->ast = ast;
   p->lambda_id_counter = 0;
   p->status = 0;
-}
-
-void print_tabs(FILE* file, i32 level) {
-  for (i32 i = 0; i < level * TAB_SIZE; ++i) {
-    fprintf(file, " ");
-  }
 }
 
 i32 expect(Parser* p, i32 type) {
@@ -55,33 +46,31 @@ i32 block(Parser* p) {
   while (!block_end(p)) {
     statement(p);
   }
-  return 0;
+  return NO_ERR;
 }
 
 i32 lambda_return(Parser* p) {
   struct Token token = get_token(p->l);
   for (;;) {
     if (token.type == T_SEMICOLON || token.type == T_BLOCKBEGIN) {
-      return 0;
+      return NO_ERR;
     }
     ast_add_node(p->ast, token);
     token = next_token(p->l);
   }
-  return 0;
+  return NO_ERR;
 }
 
 i32 lambda_arglist(Parser* p) {
   struct Token token = get_token(p->l);
   if (!expect(p, T_OPENPAREN)) {
     parse_error("Missing open '(' parenthesis in lambda expression\n");
-    return p->status = -1;
+    return p->status = ERR;
   }
-  ast_add_node(p->ast, token);
 
   for (;;) {
     token = next_token(p->l);
     if (token.type == T_CLOSEDPAREN) {
-      ast_add_node(p->ast, token);
       next_token(p->l);
       break;
     }
@@ -91,7 +80,7 @@ i32 lambda_arglist(Parser* p) {
     }
     ast_add_node(p->ast, token);
   }
-  return 0;
+  return NO_ERR;
 }
 
 // $ (arg list) { body }
@@ -130,7 +119,7 @@ i32 lambda(Parser* p, i32 id) {
   // Lambda body
   if (!expect(p, T_BLOCKBEGIN)) {
     parse_error("Expected '{' in lambda expression\n");
-    return p->status = -1;
+    return p->status = ERR;
   }
   next_token(p->l); // Skip '{'
 
@@ -143,10 +132,10 @@ i32 lambda(Parser* p, i32 id) {
 
   if (!expect(p, T_BLOCKEND)) {
     parse_error("Expected '}' in lambda expression\n");
-    return p->status = -1;
+    return p->status = ERR;
   }
   next_token(p->l); // Skip '}'
-  return 0;
+  return NO_ERR;
 }
 
 i32 statement(Parser* p) {
@@ -157,8 +146,7 @@ i32 statement(Parser* p) {
 
     case T_DOLLAR: {
       i32 lambda_id = p->lambda_id_counter++;
-      char* lambda_identifier = "lambda";
-      ast_add_node(p->ast, (struct Token) { .type = T_SYMBOL, .string = lambda_identifier, .length = strlen(lambda_identifier), .id = lambda_id});
+      ast_add_node(p->ast, (struct Token) { .type = T_LAMBDA, .id = lambda_id});
       Ast* orig_branch = p->ast;
       p->ast = &p->lambda_branch;
       next_token(p->l); // Skip '$'
@@ -172,7 +160,7 @@ i32 statement(Parser* p) {
       ast_add_node(p->ast, token);
       break;
   }
-  return 0;
+  return NO_ERR;
 }
 
 i32 statements(Parser* p) {
@@ -195,5 +183,5 @@ i32 parser_parse(char* input, char* filename, Ast* ast) {
 
   next_token(parser.l);
   statements(&parser);
-  return 0;
+  return NO_ERR;
 }

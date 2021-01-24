@@ -6,11 +6,6 @@
 #include "common.h"
 #include "token.h"
 
-enum Status_codes {
-  ERR = -1,
-  NO_ERR = 0,
-};
-
 typedef struct Token Value;
 
 typedef struct Node* Ast;
