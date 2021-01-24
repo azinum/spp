@@ -168,7 +168,6 @@ void ast_print(const Ast ast) {
 void ast_free(Ast* ast) {
   assert(ast != NULL);
   if (is_empty(*ast)) return;
-
   for (u32 i = 0; i < (*ast)->child_count; i++) {
     ast_free(&(*ast)->children[i]);
   }
