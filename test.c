@@ -1,20 +1,11 @@
-// test.c
-
 #include <stdio.h>
 #include <stdlib.h>
 
-#define VERY_COOL_MACRO(a, b, c) { \
-  if (a) { \
-    printf("%i\n", a + b); \
-  } \
-}
-
 int main(int argc, char** argv) {
-  if (argc > 2) {
-    printf("OK\n");
-  }
-  else {
-    printf("AHA!\n");
+  const char* string = "This is a string";
+  char this_is_a_char = 'C';
+  if (this_is_a_char) {
+    this_is_a_char = 'A';
   }
   return 0;
 }

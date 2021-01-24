@@ -62,7 +62,7 @@ begin_loop:
       case '\n':
       case '\r':
         l->line++;
-        l->count = 0;
+        l->count = 1;
         l->token.type = T_NEWLINE;
         return l->token;
 
@@ -74,10 +74,16 @@ begin_loop:
 
       case '#':
         while (*l->index != '\0') {
+          l->index++;
+          l->count++;
           if (*l->index == '\\') {
             l->index++;
+            l->line++;
+            l->count = 1;
           }
-          else if (end_of_line(l) && (*l->index != '\\')) {
+          else if (end_of_line(l)) {
+            l->line++;
+            l->count = 1;
             break;
           }
           l->index++;
@@ -140,6 +146,9 @@ begin_loop:
           while (!end_of_line(l) && *l->index != '\0') {
             next(l);
           }
+          l->line++;
+          l->count = 1;
+          next(l);
           break;
         }
         else if (*l->index == '*') {
@@ -290,6 +299,41 @@ begin_loop:
         return l->token;
       case '.':
         l->token.type = T_DOT;
+        return l->token;
+      case '$':
+        l->token.type = T_DOLLAR;
+        return l->token;
+
+      case '\'':
+        l->token.type = T_CHAR;
+        l->token.length++;
+        l->index++;
+        if (*l->index != '\'') {
+          lexer_error("Unfinished or invalid char symbol\n");
+          l->token.type = T_EOF;
+          return l->token;
+        }
+        l->token.length++;
+        l->index++;
+        return l->token;
+
+      case '"':
+        for (;;) {
+          if (*l->index == '\0') {
+            lexer_error("Unfinished string\n");
+            l->token.type = T_EOF;
+            return l->token;
+          }
+          else if (*l->index == '"') {
+            break;
+          }
+          l->index++;
+          l->count++;
+        }
+        l->index++;
+        l->count++;
+        l->token.type = T_STRING;
+        l->token.length = l->index - l->token.string;
         return l->token;
 
       case '\0':

@@ -63,10 +63,13 @@ enum Token_type {
   T_COMMA,          // ','
   T_DOT,            // '.'
   T_ARROW,          // '->'
+  T_DOLLAR,         // '$'
 
   T_NEWLINE,
   T_MACRO,
 
+  T_STRING,
+  T_CHAR,
   T_SYMBOL, // Any other symbol (keyword, identifier, number e.t.c.)
   T_EOF,
 };
