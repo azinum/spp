@@ -78,6 +78,10 @@ i32 generate(FILE* file, Ast* ast) {
           break;
         }
 
+        case T_SEMICOLON:
+          write_out(file, "%.*s\n", token->length, token->string);
+          break;
+
         case T_MACRO:
           write_out(file, "%.*s\n", token->length, token->string);
           break;

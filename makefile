@@ -6,11 +6,20 @@ include config.mk
 all: prepare compile run
 
 prepare:
-	mkdir -p ${BUILD_DIR}
-	mkdir -p ${OUT_DIR}
+	@mkdir -p ${BUILD_DIR}
+	@mkdir -p ${OUT_DIR}
 
 compile: ${SRC}
 	${CC} ${FLAGS}
+
+self: prepare
+	@mkdir -p ${OUT_DIR}/src
+	@mkdir -p ${OUT_DIR}/include
+	@cp makefile config.mk ${OUT_DIR}
+	@for file in ${SRC} ${INC} ; do \
+		spp $${file} > ${OUT_DIR}/$${file} ; \
+		echo "Parsed $${file} -> ${OUT_DIR}/$${file}"; \
+	done
 
 run:
 	./${BUILD_DIR}/${PROG} test.c > ${OUT_DIR}/out.c

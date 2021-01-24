@@ -305,6 +305,9 @@ begin_loop:
         return l->token;
 
       case '\'':
+        if (*l->index == '\\') {
+          l->index++;
+        }
         l->token.type = T_CHAR;
         l->token.length++;
         l->index++;
