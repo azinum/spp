@@ -23,12 +23,13 @@ i32 spp_start(i32 argc, char** argv) {
 
   parser_parse(input, filename, &ast);
   ast_print(ast);
+
   ast_free(&ast);
 
   free(input);
   input = NULL;
 
-  assert(memory_total() == 0);
+  // assert(memory_total() == 0);
   if (memory_total() != 0) {
     fprintf(stderr, "Memory leak!\n");
     memory_print_info();

@@ -4,7 +4,7 @@
 #include "lexer.h"
 
 #define lexer_error(fmt, ...) \
-  fprintf(stderr, "[ERROR]: %s:%i:%i: " fmt, l->filename, l->line, l->count, ##__VA_ARGS__)
+  fprintf(stderr, "[LexError]: %s:%i:%i: " fmt, l->filename, l->line, l->count, ##__VA_ARGS__)
 
 static i32 is_alpha(char ch);
 static i32 is_number(char ch);
@@ -63,8 +63,8 @@ begin_loop:
       case '\r':
         l->line++;
         l->count = 1;
-        l->token.type = T_NEWLINE;
-        return l->token;
+        // l->token.type = T_NEWLINE;
+        break;
 
       case ' ':
       case '\t':

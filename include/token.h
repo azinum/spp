@@ -68,6 +68,12 @@ enum Token_type {
   T_NEWLINE,
   T_MACRO,
 
+  T_LAMBDA_BODY,
+  T_LAMBDA,
+  T_ARGLIST,
+  T_RETURN_TYPE,
+  T_BODY,
+
   T_STRING,
   T_CHAR,
   T_SYMBOL, // Any other symbol (keyword, identifier, number e.t.c.)
@@ -78,7 +84,8 @@ struct Token {
   char* string;
   i32 length;
   i32 type;
-  // TODO(lucas): Add additional info like line number, file name e.t.c.
+
+  i32 id; // TODO(lucas): Temporary
 };
 
 void token_print(FILE* file, struct Token token);

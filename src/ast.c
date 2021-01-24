@@ -44,6 +44,9 @@ i32 print_tree(const Ast ast, i32 level) {
   if (ast->value.length > 0) {
     printf("%.*s\n", ast->value.length, ast->value.string);
   }
+  else {
+    printf("[%i]\n", ast->value.type);
+  }
 
   for (u32 i = 0; i < ast->child_count; i++) {
     print_tree(ast->children[i], level + 1);
@@ -157,6 +160,13 @@ Value* ast_get_node_value(Ast* ast, i32 index) {
     return &node->value;
   }
   return NULL;
+}
+
+Value* ast_get_value(Ast* ast) {
+  assert(ast);
+  if (is_empty(*ast))
+    return NULL;
+  return &((*ast)->value);
 }
 
 void ast_print(const Ast ast) {
