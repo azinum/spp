@@ -9,6 +9,8 @@ BUILD_DIR=build
 
 OUT_DIR=output
 
+INSTALL_DIR=/usr/local/bin
+
 SRC=src/*.c
 
 INC_DIR=include

@@ -16,3 +16,9 @@ run:
 	./${BUILD_DIR}/${PROG} test.c > ${OUT_DIR}/out.c
 
 install:
+	${CC} ${FLAGS}
+	chmod o+x ${BUILD_DIR}/${PROG}
+	cp ${BUILD_DIR}/${PROG} ${INSTALL_DIR}/${PROG}
+
+uninstall:
+	rm ${INSTALL_DIR}/${PROG}
