@@ -9,7 +9,7 @@ prepare:
 	mkdir -p ${BUILD_DIR}
 	mkdir -p ${OUT_DIR}
 
-compile: ${SRC} ${INC}
+compile: ${SRC}
 	${CC} ${FLAGS}
 
 run:

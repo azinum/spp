@@ -15,7 +15,6 @@ static i32 generate(FILE* file, Ast* ast);
 
 void write_out(FILE* file, char* fmt, ...) {
   va_list args;
-
   va_start(args, fmt);
   vfprintf(file, fmt, args);
   va_end(args);
@@ -64,18 +63,32 @@ i32 generate(FILE* file, Ast* ast) {
           break;
         }
 
+        case T_OPENPAREN:
+          write_out(file, "%.*s", token->length, token->string);
+          break;
+
+        case T_CLOSEDPAREN:
+          write_out(file, "%.*s", token->length, token->string);
+          break;
+
         case T_LAMBDA: {
           char lambda_name[LAMBDA_NAME_SIZE] = {0};
           snprintf(lambda_name, LAMBDA_NAME_SIZE, "%s%i", lambda_identifier, token->id);
           write_out(file, "%s", lambda_name);
           break;
         }
+
         case T_MACRO:
           write_out(file, "%.*s\n", token->length, token->string);
           break;
 
         default:
-          write_out(file, "%.*s ", token->length, token->string);
+          if (token->type > T_OPERATOR && token->type < T_NO_OPERATOR) {
+            write_out(file, "%.*s", token->length, token->string);
+          }
+          else {
+            write_out(file, "%.*s ", token->length, token->string);
+          }
           break;
       }
     }
