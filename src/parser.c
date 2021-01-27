@@ -51,12 +51,18 @@ i32 block(Parser* p) {
 
 i32 lambda_return(Parser* p) {
   struct Token token = get_token(p->l);
+  i32 iterations = 0;
   for (;;) {
-    if (token.type == T_SEMICOLON || token.type == T_BLOCKBEGIN) {
+    if (!iterations && token.type == T_BLOCKBEGIN) {
+      parse_error("Missing return type in lambda expression\n");
+      return p->status = ERR;
+    }
+    if (token.type == T_BLOCKBEGIN) {
       return NO_ERR;
     }
     ast_add_node(p->ast, token);
     token = next_token(p->l);
+    iterations++;
   }
   return NO_ERR;
 }
@@ -113,7 +119,8 @@ i32 lambda(Parser* p, i32 id) {
   Ast return_type_branch = ast_get_last(p->ast);
 
   p->ast = &return_type_branch;
-  lambda_return(p);
+  if (lambda_return(p) != NO_ERR)
+    return p->status;
   p->ast = orig_branch;
 
   // Lambda body

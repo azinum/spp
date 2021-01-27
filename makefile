@@ -17,12 +17,12 @@ self: prepare
 	@mkdir -p ${OUT_DIR}/include
 	@cp makefile config.mk ${OUT_DIR}
 	@for file in ${SRC} ${INC} ; do \
-		spp $${file} > ${OUT_DIR}/$${file} ; \
+		spp $${file} ; \
 		echo "Parsed $${file} -> ${OUT_DIR}/$${file}"; \
 	done
 
 run:
-	./${BUILD_DIR}/${PROG} test.c # > ${OUT_DIR}/out.c
+	./${BUILD_DIR}/${PROG} test.c
 
 install:
 	${CC} ${FLAGS}

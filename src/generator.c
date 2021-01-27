@@ -80,12 +80,12 @@ i32 generate(Generator* g, char* source, Ast* ast) {
 
         // Here is where lambda expressions begin in the ast:
         // { arglist, return type, body }
+        // TODO(lucas): Put these in a seperate branch for each lambda expression
         case T_ARGLIST: {
           Ast arglist_branch =  ast_get_node_at(ast, i + 0);
           Ast return_branch =   ast_get_node_at(ast, i + 1);
           Ast body_branch =     ast_get_node_at(ast, i + 2);
           i += 2;
-          // We need to know what size the lambda was here, so that we can update the source pointer to begin at the end of this lambda expression.
           generate_lambda(g, source, &arglist_branch, &return_branch, &body_branch);
           break;
         }

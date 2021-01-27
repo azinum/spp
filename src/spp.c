@@ -7,6 +7,9 @@
 #include "util.h"
 #include "generator.h"
 
+#define MAX_PATH_SIZE 512
+#define OUTPUT_PATH "output"
+
 i32 spp_start(i32 argc, char** argv) {
   char* filename = "test.c";
 
@@ -14,7 +17,7 @@ i32 spp_start(i32 argc, char** argv) {
     filename = argv[1];
   }
   else {
-    fprintf(stderr, "[Error]: Please select a file that you want to parse\n");
+    fprintf(stderr, "[Error]: Please select a file to parse\n");
     return -1;
   }
 
@@ -28,7 +31,9 @@ i32 spp_start(i32 argc, char** argv) {
   Ast ast = ast_create();
 
   if (parser_parse(input, filename, &ast) == NO_ERR) {
-    FILE* file = fopen("output/out.c", "w");
+    char out_filename[MAX_PATH_SIZE] = {0};
+    snprintf(out_filename, MAX_PATH_SIZE, "%s/%s", OUTPUT_PATH, filename);
+    FILE* file = fopen(out_filename, "w");
     Generator g;
     generator_init(&g, file, input, input_size);
     generate_from_ast(&g, &ast);
