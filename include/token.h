@@ -90,6 +90,7 @@ struct Token {
   i32 type;
 
   i32 id; // TODO(lucas): Temporary, for identification lambda expressions
+  i32 block_size;
 };
 
 void token_print(FILE* file, struct Token token);

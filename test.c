@@ -3,16 +3,24 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-typedef int (*callback)(int, int);
+typedef int (*cb)(int, int);
 
-void hello(const char* string, callback cb) {
-  printf("%s: %i\n", string, cb(5, 6));
-}
+void do_thing(cb callback);
 
-int main() {
-  hello("Hello there", $(int a, int b) -> int {
+int main(void) {
+
+  do_thing($(int a, int b) -> int {
     return a + b;
   });
+
+  do_thing($(int a, int b) -> int {
+    return a - b;
+  });
+
   return 0;
 }
 
+void do_thing(cb callback) {
+  int result = callback(5, 3);
+  printf("Result: %i\n", result);
+}

@@ -22,7 +22,7 @@ self: prepare
 	done
 
 run:
-	./${BUILD_DIR}/${PROG} test.c > ${OUT_DIR}/out.c
+	./${BUILD_DIR}/${PROG} test.c # > ${OUT_DIR}/out.c
 
 install:
 	${CC} ${FLAGS}
@@ -31,3 +31,6 @@ install:
 
 uninstall:
 	rm ${INSTALL_DIR}/${PROG}
+
+clean:
+	rm -dr ${OUT_DIR}

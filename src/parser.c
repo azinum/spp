@@ -146,11 +146,24 @@ i32 statement(Parser* p) {
 
     case T_DOLLAR: {
       i32 lambda_id = p->lambda_id_counter++;
-      ast_add_node(p->ast, (struct Token) { .type = T_LAMBDA, .id = lambda_id});
+      ast_add_node(p->ast, (struct Token) {
+        .type = T_LAMBDA,
+        .id = lambda_id,
+        .string = token.string,
+        .length = token.length,
+        .block_size = 0,
+      });
+      struct Token* lambda_node = ast_get_last_node_value(p->ast);
+      assert(lambda_node);
+
       Ast* orig_branch = p->ast;
       p->ast = &p->lambda_branch;
       next_token(p->l); // Skip '$'
       lambda(p, lambda_id);
+      struct Token current = get_token(p->l);
+      if (current.length) {
+        lambda_node->block_size = current.string - lambda_node->string;
+      }
       p->ast = orig_branch;
       break;
     }

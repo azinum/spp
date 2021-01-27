@@ -32,6 +32,8 @@ Ast* ast_get_node(Ast* ast, int index);
 
 Value* ast_get_node_value(Ast* ast, i32 index);
 
+Value* ast_get_last_node_value(Ast* ast);
+
 Value* ast_get_value(Ast* ast);
 
 void ast_print(const Ast ast);

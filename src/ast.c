@@ -162,6 +162,11 @@ Value* ast_get_node_value(Ast* ast, i32 index) {
   return NULL;
 }
 
+Value* ast_get_last_node_value(Ast* ast) {
+  i32 child_count = ast_child_count(ast);
+  return ast_get_node_value(ast, child_count - 1);
+}
+
 Value* ast_get_value(Ast* ast) {
   assert(ast);
   if (is_empty(*ast))

@@ -8,7 +8,7 @@
 #include "generator.h"
 
 i32 spp_start(i32 argc, char** argv) {
-  char* filename = "stdin";
+  char* filename = "test.c";
 
   if (argc > 1) {
     filename = argv[1];
@@ -23,10 +23,16 @@ i32 spp_start(i32 argc, char** argv) {
     fprintf(stderr, "[Error]: '%s' No such file\n", filename);
     return ERR;
   }
+  i32 input_size = strlen(input);
+
   Ast ast = ast_create();
 
   if (parser_parse(input, filename, &ast) == NO_ERR) {
-    generate_from_ast(stdout, &ast);
+    FILE* file = fopen("output/out.c", "w");
+    Generator g;
+    generator_init(&g, file, input, input_size);
+    generate_from_ast(&g, &ast);
+    fclose(file);
   }
 
   ast_free(&ast);
