@@ -73,7 +73,8 @@ enum Token_type {
   T_MACRO,
 
   T_LAMBDA_BODY,
-  T_LAMBDA, // NOTE(lucas): Unused for now
+  T_LAMBDA,
+  T_LAMBDA_EXPR,
   T_ARGLIST,
   T_RETURN_TYPE,
   T_BODY,

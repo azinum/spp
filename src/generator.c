@@ -78,15 +78,13 @@ i32 generate(Generator* g, char* source, Ast* ast) {
           break;
         }
 
-        // Here is where lambda expressions begin in the ast:
-        // { arglist, return type, body }
-        // TODO(lucas): Put these in a seperate branch for each lambda expression
-        case T_ARGLIST: {
-          Ast arglist_branch =  ast_get_node_at(ast, i + 0);
-          Ast return_branch =   ast_get_node_at(ast, i + 1);
-          Ast body_branch =     ast_get_node_at(ast, i + 2);
-          i += 2;
-          generate_lambda(g, source, &arglist_branch, &return_branch, &body_branch);
+        case T_LAMBDA_EXPR: {
+          Ast lambda = ast_get_node_at(ast, i);
+          Ast arglist = ast_get_node_at(&lambda, 0);
+          Ast ret =     ast_get_node_at(&lambda, 1);
+          Ast body =    ast_get_node_at(&lambda, 2);
+          assert(arglist && ret && body);
+          generate_lambda(g, source, &arglist, &ret, &body);
           break;
         }
 

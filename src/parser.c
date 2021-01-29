@@ -51,9 +51,9 @@ i32 block(Parser* p) {
 
 i32 lambda_return(Parser* p) {
   struct Token token = get_token(p->l);
-  i32 iterations = 0;
+  i32 first_iteration = 1;
   for (;;) {
-    if (!iterations && token.type == T_BLOCKBEGIN) {
+    if (first_iteration && token.type == T_BLOCKBEGIN) {
       parse_error("Missing return type in lambda expression\n");
       return p->status = ERR;
     }
@@ -62,7 +62,7 @@ i32 lambda_return(Parser* p) {
     }
     ast_add_node(p->ast, token);
     token = next_token(p->l);
-    iterations++;
+    first_iteration = 0;
   }
   return NO_ERR;
 }
@@ -101,13 +101,17 @@ i32 lambda_arglist(Parser* p) {
 i32 lambda(Parser* p, i32 id) {
   Ast* orig_branch = p->ast;
 
+  ast_add_node(p->ast, (struct Token) { .type = T_LAMBDA_EXPR });
+  Ast lambda_branch = ast_get_last(p->ast);
+  p->ast = &lambda_branch;
+
   ast_add_node(p->ast, (struct Token) { .type = T_ARGLIST });
   Ast arglist_branch = ast_get_last(p->ast);
 
   // Argument list
   p->ast = &arglist_branch;
   lambda_arglist(p);
-  p->ast = orig_branch;
+  p->ast = &lambda_branch;
 
   if (!expect(p, T_ARROW)) {
     parse_error("Expected '->' in lambda expression\n");
@@ -121,7 +125,7 @@ i32 lambda(Parser* p, i32 id) {
   p->ast = &return_type_branch;
   if (lambda_return(p) != NO_ERR)
     return p->status;
-  p->ast = orig_branch;
+  p->ast = &lambda_branch;
 
   // Lambda body
   if (!expect(p, T_BLOCKBEGIN)) {
@@ -135,7 +139,9 @@ i32 lambda(Parser* p, i32 id) {
 
   p->ast = &body_branch;
   block(p); // Parse the lambda body
-  p->ast = orig_branch;
+
+
+  p->ast = orig_branch; // We're done, let's return to the original branch!
 
   if (!expect(p, T_BLOCKEND)) {
     parse_error("Expected '}' in lambda expression\n");
