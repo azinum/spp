@@ -140,14 +140,12 @@ i32 lambda(Parser* p, i32 id) {
   p->ast = &body_branch;
   block(p); // Parse the lambda body
 
-
-  p->ast = orig_branch; // We're done, let's return to the original branch!
-
   if (!expect(p, T_BLOCKEND)) {
     parse_error("Expected '}' in lambda expression\n");
     return p->status = ERR;
   }
   next_token(p->l); // Skip '}'
+  p->ast = orig_branch; // We're done, let's return to the original branch!
   return NO_ERR;
 }
 

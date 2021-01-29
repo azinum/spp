@@ -12,6 +12,8 @@ static const char* lambda_identifier = "_spp_lambda";
 
 static void write_out(FILE* file, char* fmt, ...);
 static i32 generate_lambda(Generator* g, char* source, Ast* args, Ast* ret, Ast* body);
+static i32 generate_lambda_declaration(Generator* g, Ast* args, Ast* ret);
+static i32 generate_lambda_declarations(Generator* g, Ast* ast);
 static i32 generate(Generator* g, char* source, Ast* ast);
 
 void write_out(FILE* file, char* fmt, ...) {
@@ -22,6 +24,19 @@ void write_out(FILE* file, char* fmt, ...) {
 }
 
 i32 generate_lambda(Generator* g, char* source, Ast* args, Ast* ret, Ast* body) {
+  generate_lambda_declaration(g, args, ret);
+  write_out(g->file, " {\n");
+  struct Token* first_in_body = ast_get_node_value(body, 0);
+  if (first_in_body) {
+    if (first_in_body->string) {
+      generate(g, first_in_body->string, body);
+    }
+  }
+  write_out(g->file, "\n}\n");
+  return NO_ERR;
+}
+
+i32 generate_lambda_declaration(Generator* g, Ast* args, Ast* ret) {
   struct Token* token = NULL;
 
   for (i32 i = 0; i < ast_child_count(ret); i++) {
@@ -44,23 +59,35 @@ i32 generate_lambda(Generator* g, char* source, Ast* args, Ast* ret, Ast* body) 
       write_out(g->file, "%.*s ", token->length, token->string);
     }
   }
+  write_out(g->file, ")");
+  return NO_ERR;
+}
 
-  struct Token* first_in_body = ast_get_node_value(body, 0);
-  write_out(g->file, ") ");
-  write_out(g->file, "{\n");
-  if (first_in_body) {
-    if (first_in_body->string) {
-      generate(g, first_in_body->string, body);
+i32 generate_lambda_declarations(Generator* g, Ast* ast) {
+  struct Token* token = NULL;
+  for (i32 i = 0; i < ast_child_count(ast); i++) {
+    token = ast_get_node_value(ast, i);
+    if (token) {
+      if (token->type == T_LAMBDA_EXPR) {
+        Ast lambda = ast_get_node_at(ast, i);
+        Ast arglist = ast_get_node_at(&lambda, 0);
+        Ast ret =     ast_get_node_at(&lambda, 1);
+        generate_lambda_declaration(g, &arglist, &ret);
+        write_out(g->file, ";\n");
+      }
+      else {
+        assert(0);
+        return ERR;
+      }
     }
   }
-  write_out(g->file, "}\n");
-  return 0;
+  return NO_ERR;
 }
 
 i32 generate(Generator* g, char* source, Ast* ast) {
   struct Token* token = ast_get_node_value(ast, 0);
   if (!token) {
-    return 0;
+    return NO_ERR;
   }
 
   i32 child_count = ast_child_count(ast);
@@ -124,6 +151,12 @@ i32 generator_init(Generator* g, FILE* file, char* source, i32 source_size) {
 }
 
 i32 generate_from_ast(Generator* g, Ast* ast) {
+  assert(ast);
+
+  Ast lambdas = ast_get_node_at(ast, 0);
+  if (lambdas) {
+    generate_lambda_declarations(g, &lambdas);
+  }
   generate(g, g->source, ast);
   // ast_print(*ast);
   return NO_ERR;
