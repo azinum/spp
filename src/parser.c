@@ -82,7 +82,7 @@ i32 lambda_arglist(Parser* p) {
     }
     else if (token.type == T_EOF) {
       parse_error("Missing closing ')' parenthesis in lambda expression\n");
-      return p->status = -1;
+      return p->status = ERR;
     }
     ast_add_node(p->ast, token);
   }
@@ -115,7 +115,7 @@ i32 lambda(Parser* p, i32 id) {
 
   if (!expect(p, T_ARROW)) {
     parse_error("Expected '->' in lambda expression\n");
-    return p->status = -1;
+    return p->status = ERR;
   }
   next_token(p->l);
 
@@ -189,7 +189,9 @@ i32 statement(Parser* p) {
 
 i32 statements(Parser* p) {
   while (!end(p)) {
-    p->status = statement(p);
+    statement(p);
+    if (p->status != NO_ERR)
+      break;
   }
   return p->status;
 }
@@ -207,5 +209,5 @@ i32 parser_parse(char* input, char* filename, Ast* ast) {
 
   next_token(parser.l);
   statements(&parser);
-  return NO_ERR;
+  return parser.status;
 }

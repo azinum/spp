@@ -17,12 +17,13 @@ self: prepare
 	@mkdir -p ${OUT_DIR}/include
 	@cp makefile config.mk ${OUT_DIR}
 	@for file in ${SRC} ${INC} ; do \
-		spp $${file} ; \
+		spp $${file} ${OUT_DIR} ; \
+		[ $$? != 0 ] && echo "Failed to parse $${file}" && break ; \
 		echo "Parsed $${file} -> ${OUT_DIR}/$${file}"; \
 	done
 
 run:
-	./${BUILD_DIR}/${PROG} test.c
+	./${BUILD_DIR}/${PROG} test.c output
 
 install:
 	${CC} ${FLAGS}

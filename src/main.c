@@ -1,5 +1,7 @@
 // main.c
 // spp - simple preprocessor
+// Usage:
+// ./spp <source file> <output directory>
 
 #include "spp.h"
 
