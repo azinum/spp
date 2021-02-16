@@ -4,12 +4,13 @@
 #include <stdio.h>
 
 int main(void) {
-  int result = ($(int a, int b) -> int {
-    return a + b + $() -> int {
-      return 1;
-    }();
-  })(5, 3);
-
-  printf("Result: %i\n", result);
+  $(int a) -> void {
+    while (a) {
+      if (a == 5) {
+        printf("OK\n");
+        a--;
+      }
+    }
+  }(5);
   return 0;
 }

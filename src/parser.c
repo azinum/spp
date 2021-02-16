@@ -179,6 +179,19 @@ i32 statement(Parser* p) {
       break;
     }
 
+    case T_BLOCKBEGIN: {
+      ast_add_node(p->ast, p->l->token);
+      next_token(p->l); // Skip '{'
+      block(p);
+      if (!expect(p, T_BLOCKEND)) {
+        parse_error("Expected '}' in block\n");
+        return p->status = ERR;
+      }
+      ast_add_node(p->ast, p->l->token);
+      next_token(p->l); // Skip '}'
+      break;
+    }
+
     default:
       next_token(p->l);
       ast_add_node(p->ast, token);
