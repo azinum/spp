@@ -11,7 +11,7 @@
 static const char* lambda_identifier = "_spp_lambda";
 
 static void write_out(FILE* file, char* fmt, ...);
-static i32 generate_lambda(Generator* g, char* source, Ast* args, Ast* ret, Ast* body);
+static i32 generate_lambda(Generator* g, Ast* args, Ast* ret, Ast* body);
 static i32 generate_lambda_declaration(Generator* g, Ast* args, Ast* ret);
 static i32 generate_lambda_declarations(Generator* g, Ast* ast);
 static i32 generate(Generator* g, char* source, Ast* ast);
@@ -23,7 +23,7 @@ void write_out(FILE* file, char* fmt, ...) {
   va_end(args);
 }
 
-i32 generate_lambda(Generator* g, char* source, Ast* args, Ast* ret, Ast* body) {
+i32 generate_lambda(Generator* g, Ast* args, Ast* ret, Ast* body) {
   generate_lambda_declaration(g, args, ret);
   write_out(g->file, " {\n");
   struct Token* first_in_body = ast_get_node_value(body, 0);
@@ -84,6 +84,24 @@ i32 generate_lambda_declarations(Generator* g, Ast* ast) {
   return NO_ERR;
 }
 
+i32 generate_lambda_bodies(Generator* g, Ast* ast) {
+  struct Token* token = NULL;
+  for (i32 i = 0; i < ast_child_count(ast); i++) {
+    token = ast_get_node_value(ast, i);
+    if (token) {
+      if (token->type == T_LAMBDA_EXPR) {
+        Ast lambda = ast_get_node_at(ast, i);
+        Ast arglist = ast_get_node_at(&lambda, 0);
+        Ast ret =     ast_get_node_at(&lambda, 1);
+        Ast body =    ast_get_node_at(&lambda, 2);
+        assert(arglist && ret && body);
+        generate_lambda(g, &arglist, &ret, &body);
+      }
+    }
+  }
+  return NO_ERR;
+}
+
 i32 generate(Generator* g, char* source, Ast* ast) {
   struct Token* token = ast_get_node_value(ast, 0);
   if (!token) {
@@ -102,16 +120,6 @@ i32 generate(Generator* g, char* source, Ast* ast) {
           if (ast_child_count(&lambda_branch) > 0) {
             generate(g, source, &lambda_branch);
           }
-          break;
-        }
-
-        case T_LAMBDA_EXPR: {
-          Ast lambda = ast_get_node_at(ast, i);
-          Ast arglist = ast_get_node_at(&lambda, 0);
-          Ast ret =     ast_get_node_at(&lambda, 1);
-          Ast body =    ast_get_node_at(&lambda, 2);
-          assert(arglist && ret && body);
-          generate_lambda(g, source, &arglist, &ret, &body);
           break;
         }
 
@@ -154,10 +162,11 @@ i32 generate_from_ast(Generator* g, Ast* ast) {
   assert(ast);
 
   Ast lambdas = ast_get_node_at(ast, 0);
-  if (lambdas) {
+  if (lambdas)
     generate_lambda_declarations(g, &lambdas);
-  }
   generate(g, g->source, ast);
+  if (lambdas)
+    generate_lambda_bodies(g, &lambdas);
   // ast_print(*ast);
   return NO_ERR;
 }
