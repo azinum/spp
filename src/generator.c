@@ -72,6 +72,7 @@ i32 generate_lambda_declarations(Generator* g, Ast* ast) {
         Ast lambda = ast_get_node_at(ast, i);
         Ast arglist = ast_get_node_at(&lambda, 0);
         Ast ret =     ast_get_node_at(&lambda, 1);
+        write_out(g->file, "static ");
         generate_lambda_declaration(g, &arglist, &ret);
         write_out(g->file, ";\n");
       }
