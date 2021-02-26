@@ -216,8 +216,7 @@ i32 parser_parse(char* input, char* filename, Ast* ast) {
   Parser parser;
   parser_init(&parser, &lexer, ast);
 
-  char* lambda_body = "lambda_body";
-  ast_add_node(parser.ast, (struct Token) { .type = T_LAMBDA_BODY, .string = lambda_body, .length = strlen(lambda_body) });
+  ast_add_node(parser.ast, (struct Token) { .type = T_LAMBDA_BODY });
   parser.lambda_branch = ast_get_last(parser.ast);
 
   next_token(parser.l);

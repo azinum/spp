@@ -3,6 +3,7 @@
 #include "common.h"
 #include "lexer.h"
 
+// TODO(lucas): Fix line counting
 #define lexer_error(fmt, ...) \
   fprintf(stderr, "[LexError]: %s:%i:%i: " fmt, l->filename, l->line, l->count, ##__VA_ARGS__)
 

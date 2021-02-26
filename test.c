@@ -5,12 +5,11 @@
 
 int main(void) {
   $(int a) -> void {
-    while (a) {
+    while (a--) {
       if (a == 5) {
         printf("OK\n");
-        a--;
       }
     }
-  }(5);
+  }(10);
   return 0;
 }
